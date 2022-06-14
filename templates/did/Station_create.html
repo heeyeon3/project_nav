@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,  user-scalable=no">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<title>Station Management - NAVSYS</title>
+<!-- 공통 링크 시작 -->
+<link rel="stylesheet" href="/static/css/reset.css">
+<link rel="stylesheet" href="/static/css/contents.css">
+<script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>	
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+<script src="/static/js/common/common.js"></script>
+<!-- //공통 링크 끝 -->
+<script src="/static/js/did/station_create.js"></script>
+</head>
+<body>
+<!-- wrap 시작 -->
+<div id="wrap">
+    <!-- header 시작 -->
+    <div id="header" class="menu03">
+		<h1>NAVSYS Technology INC</h1>
+		<img class="mmtr_img" src="/static/images/mmtr_netvu.png"></img>
+		<div id="marquee"><p id="data_status"></p></div>
+		<nav class="nav_wrap">
+			<ul class="nav_menu">
+				<li id="menu_project"><a href="/Project_list">Project Management</a></li>
+				<li><a href="/Location_list">Location Management</a></li>
+				<li><a href="/Station_list" class="active">Station Management</a></li>
+				<li><a href="/Monitoring01">Monitoring</a></li>
+				<li><a href="/Data01">Data Management</a></li>
+				<li><a href="/User_list">User Management</a></li>
+			</ul>
+		</nav>
+		<button type="button" class="btn_point" style="margin-top: 80px; left: 20px; z-index: 100; position: absolute;" onclick="manual()" > manual down</button>
+		<button type="button" class="btn_logout" onclick="logout();">로그아웃</button>
+	</div>
+    <!-- header 끝 -->
+    
+    <!-- container 시작 -->
+    <div id="container">
+        <!-- content 시작 -->
+        <section id="content">
+			
+			<div class="page_tit">
+				<h2>STATION MANAGEMENT</h2>
+				<div class="page_nav">STATION MANAGEMENT</div>
+			</div>
+			<p style="margin-bottom: -25px;">* 필수 항목입니다. </p>
+			<form class="" id="formSetTop" name="formSetTop">
+				<div class="create_wrap">	
+					<div class="input_row">
+						<label for="" id="">* STATION NAME</label>
+						<input autocomplete="off" type="text" name="station_name" id="station_name" class="size_full">
+					</div>
+					<div class="input_row">
+						<label for="" id="">STATION IP ADDRESS</label>
+						<input autocomplete="off" type="text" name="station_ipAddress" id="station_ipAddress" class="size_full" oninput="this.value = this.value.replace(/[^-\.0-9]/g, '');">
+					</div>
+					<div class="input_row">
+						<label for="" id="">* PROJECT</label>
+						<select name="" id="selectBox01">
+							<option value="all">project를 입력해주세요</option>
+							
+						</select>
+					</div>	
+					<div class="input_row">
+						<label for="" id="">* LOCATION</label>
+						<select name="" id="selectBox02">
+							<option value="all">location 입력해주세요</option>
+					
+						</select>
+					</div>
+					<div class="input_row">
+						<label for="" id="">* STATION ID</label>
+						<input autocomplete="off" type="text" name="station_id" id="station_id" class="size_full">
+					</div>	
+					<div class="input_row">
+						<label for="" id="">* UDP PORT 1</label>
+						<input autocomplete="off" type="text" name="station_udp1" id="station_udp1" class="size_full" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+					</div>	
+					<div class="input_row">
+						<label for="" id="">* UDP PORT 2</label>
+						<input autocomplete="off" type="text" name="station_udp2" id="station_udp2" class="size_full" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+					</div>	
+					<div class="input_row">
+						<label for="" id="">* UDP PORT 3</label>
+						<input autocomplete="off" type="text" name="station_udp3" id="station_udp3" class="size_full" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+					</div>	
+				</div>
+			</form>
+
+			<div class="btn_wrap">
+				<button type="button" class="btn_default" id="" onClick="location.href='Station_list'">CANCEL</button>
+				<button type="button" class="btn_default" id="btn_delete">DELETE</button>
+				<button type="button" class="btn_default" id="btn_edit">EDIT</button>
+				<button type="submit" class="btn_point" id="btn_add">ADD</button>
+			</div>
+			
+        </section>
+        <!-- //content 끝 -->
+		
+    </div>
+    <!-- //container 끝 --> 
+	<footer id="footer">Copyright (C) NAVSYS TECHNOLOGY INC. All Rights Reserved.</footer>
+</div>
+<!-- //wrap 끝 -->
+	
+<!-- page script 시작 -->
+<script type="text/javascript">
+$(document).ready(function(){
+	
+});		
+</script>	
+</body>
+</html>
+

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,  user-scalable=no">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Content-Script-Type" content="text/javascript" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+	<title>Monitoring - NAVSYS</title>
+	<!-- 공통 링크 시작 -->
+	<link rel="stylesheet" href="/static/css/reset.css">
+	<link rel="stylesheet" href="/static/css/contents.css">
+	<script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.ztree.core.js"></script>	
+	<script type="text/javascript" src="/static/js/jquery.scrollbar.js"></script>	
+	<script type="text/javascript" src="/static/js/jquery.ztree.exedit.js"></script>	
+	
+	<script src="/static/js/common/common.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+	<!-- //공통 링크 끝 -->
+
+
+	<!-- page script -->
+	<script src="/static/js/did/monitoring01.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+	<!-- save  -->
+	<script src="/static/js/html2canvas.js"></script>
+	<script src="/static/js/jspdf.min.js"></script>
+
+	<!-- KAKAO MAP API (now API key = JUN) -->
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=2f56e5f7cd0b51e3298710eb8d585d1a"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=2f56e5f7cd0b51e3298710eb8d585d1a&libraries=clusterer"></script>
+	<!-- KAKAO MAP API 끝 -->
+
+	<!-- Numeric.js -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
+	<!-- Plotly.js -->
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	
+	<!-- KAKAO MAP STYLE -->
+	<style>
+		.gm-style iframe + div { border:none!important; }
+		
+		#kakao_map {height: 100%; width: 100%;}
+		#kakao_map_wrap {position:relative;overflow:hidden;}
+		.radius_border{border:1px solid #919191;border-radius:5px;}     
+		.custom_typecontrol {position:absolute;top:10px;right:10px;overflow:hidden;height:30px;margin:0;padding:0;z-index:1;font-size:12px;font-family:'Malgun Gothic', '맑은 고딕', sans-serif;}
+		.custom_typecontrol span {display:block;  width:65px;height:30px;float:left;text-align:center;line-height:30px;cursor:pointer;}
+		.custom_typecontrol .btn {background:#fff;background:linear-gradient(#fff,  #e6e6e6);}       
+		.custom_typecontrol .btn:hover {background:#f5f5f5;background:linear-gradient(#f5f5f5,#e3e3e3);}
+		.custom_typecontrol .btn:active {background:#e6e6e6;background:linear-gradient(#e6e6e6, #fff);}    
+		.custom_typecontrol .selected_btn {color:#fff;background:#425470;background:linear-gradient(#425470, #5b6d8a);}
+		.custom_typecontrol .selected_btn:hover {color:#fff;}   
+		.custom_zoomcontrol {position:absolute;top:50px;right:10px;width:36px;height:80px;overflow:hidden;z-index:1;background-color:#f5f5f5;} 
+		.custom_zoomcontrol span {display:block; padding-top: 10px; width:36px;height:40px;text-align:center;cursor:pointer;}     
+		.custom_zoomcontrol span img {width:15px;height:15px; border:none;}             
+		.custom_zoomcontrol span:first-child{border-bottom:1px solid #bfbfbf;}    
+	</style>
+</head>
+<body>
+	<div id="spinner_wrap">
+		<div id="Spinner" class="loadingio-spinner-spinner-2abenyjlvb2"><div class="ldio-9mmzph3q2iw">
+		<div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+		</div></div>
+		</div>	
+<!-- wrap 시작 -->
+<div id="wrap">
+	
+    <!-- header 시작 -->
+    <div id="header" class="menu04">
+		<h1>NAVSYS Technology INC</h1>
+		<img class="mmtr_img" src="/static/images/mmtr_netvu.png"></img>
+		<div id="marquee"><p id="data_status"></p></div>
+		<nav class="nav_wrap">
+			<ul class="nav_menu">
+				<li id="menu_project"><a href="Project_list">Project Management</a></li>
+				<li><a href="Location_list">Location Management</a></li>
+				<li><a href="Station_list">Station Management</a></li>
+				<li class="treeY"><a href="Monitoring01" class="active">Monitoring</a>
+					<div class="tree_wrap scrollbar-dynamic" style="max-height: 150px;">
+						<ul id="treeDemo" class="ztree"></ul>
+					</div>
+				</li>
+				<li><a href="Data01">Data Management</a></li>
+				<li><a href="User_list">User Management</a></li>
+			</ul>
+		</nav>
+		<button type="button" class="btn_point" style="margin-top: 80px; left: 20px; z-index: 100; position: absolute;" onclick="manual()" > manual down</button>
+		<button type="button" class="btn_logout" onclick="logout()">로그아웃</button>
+	</div>
+    <!-- header 끝 -->
+    
+    <!-- container 시작 -->
+    <div id="container">
+        <!-- content 시작 -->
+        <section id="content">
+			
+			<div class="page_tit">
+				<h2>MONITORING </h2>
+				<div class="page_nav" id="page_nav">
+					<span>MONITORING</span>
+					<span id="project_nav"></span>
+					<span id="location_nav"></span>
+					<span id="station_nav"></span>
+				</div>
+				<!-- <div class="page_nav" id="page_nav">MONITORING &gt; 프로젝트01 &gt; 지도명 01 &gt; STATION ID</div> -->
+			</div>
+		    <!-- <div class="tree_wrap scrollbar-dynamic" style="max-height: 150px;">
+				<ul id="treeDemo01" class="ztree"></ul>
+			</div> 
+	 -->
+			<section class="monitoring_conts"> 
+				<h3>PROJECT : <span id="project_name"></span></h3>
+				<div class="map_sel" id="maptype">
+					<span><input type="radio" id="mapType01" value="google" name="map_type" checked><label for="mapType01" class="lb_radio">Google Map</label></span>
+					<span><input type="radio" id="mapType02" value="kakao" name="map_type"><label for="mapType02" class="lb_radio">Kakao Map</label></span>
+				</div>				
+				<div class="map_wrap" id="google_map_wrap"></div>
+				<div class="map_wrap" style="display: none;" id="kakao_map_wrap">
+					<div id="kakao_map"></div>
+					<!-- 지도타입 컨트롤 div 입니다 -->
+					<div class="custom_typecontrol radius_border">
+						<span id="btnRoadmap" class="selected_btn" onclick="setMapType('roadmap')">지도</span>
+						<span id="btnSkyview" class="btn" onclick="setMapType('skyview')">스카이뷰</span>
+					</div>
+					<!-- 지도 확대, 축소 컨트롤 div 입니다 -->
+					<div class="custom_zoomcontrol radius_border"> 
+						<span onclick="zoomIn()"><img src="https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/ico_plus.png" alt="확대"></span>  
+						<span onclick="zoomOut()"><img src="https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/ico_minus.png" alt="축소"></span>
+					</div>
+				</div>
+			</section>
+			
+			<section class="monitoring_conts">
+				<h3>STATION : <span id="station_name"></span></h3>
+				<div class="chart_col2_wrap">
+					<div class="chart_left">
+						<div class="chart_search">
+							<button style="display: inline-block;" type="button" class="btn_point" id="savebtn" >SAVE</button>
+
+							<div class="input_box check" id="savetype" style=" display: inline-block; float: left; vertical-align: middle; height: 100%;padding-top: 1.2%; margin-left:10px;">
+								<span><input type="radio" id="plotType01" name="plot_type" checked><label for="plotType01" class="lb_radio">PNG</label></span>
+								<span style="margin-left: 5px;"><input type="radio" id="plotType02" name="plot_type" ><label for="plotType02" class="lb_radio">JPG</label></span>
+								<span style="margin-left: 5px;"><input type="radio" id="plotType03" name="plot_type" ><label for="plotType03" class="lb_radio">PDF</label></span>
+							</div>
+							
+							<!-- <button type="button" class="btn_point" id="savePdf" >pdf</button> -->
+							<div>
+								<button type="button" class="btn_prev" id="btn_prev">이전일</button>
+								<strong id="current_date"></strong>
+								<button type="button" class="btn_next" id="btn_next">다음일</button>
+								<button type="button" class="btn_refresh" id="monitoring_refresh"> </button> 
+								<button type="button" class="btn_search" id="btnSearch" onclick="editData()">검색</button>
+							</div>							
+						</div>
+						<div id="linechart"> 
+							<div class="chart_type_line" >
+								<!-- div안에 차트 넣어 주세요. 이때 이미지는 삭제 해 주세요 -->
+								<!-- <img src="./images/@chart01.png" id="" alt=""> -->
+								<canvas id="myChart01" style="height: 250px; width: 100%; background-color: #777777;" width="900"></canvas>
+							</div>
+							<div class="chart_type_line">
+								<!-- div안에 차트 넣어 주세요. 이때 이미지는 삭제 해 주세요 -->
+								<!-- <img src="./images/@chart01.png" id="" alt=""> -->
+								<canvas id="myChart02" style="height: 250px; width: 100%; background-color: #777777;" width="900"></canvas>
+							</div>
+							<div class="chart_type_line">
+								<!-- div안에 차트 넣어 주세요. 이때 이미지는 삭제 해 주세요 -->
+								<!-- <img src="./images/@chart01.png" id="" alt=""> -->
+								<canvas id="myChart03" style="height: 250px; width: 100%; background-color: #777777;" width="900"></canvas>
+							</div>
+						</div>
+						
+					</div>
+					<div class="chart_right">
+						<div class="chart_search">
+							<button type="button" class="btn_refresh" id="satellite_refresh"> </button> 
+							<button type="button" class="btn_search" id="btnSearch2" onclick="satellite()">검색</button>
+						</div>
+						<div class="chart_type_circle" id="myDiv">
+							<!-- div안에 차트 넣어 주세요. 이때 이미지는 삭제 해 주세요 -->
+							<!-- <img src="./images/@chart02.png" id="" alt=""> -->
+							<!-- <div style="width: 20%; background-color: red;"></div> -->
+						</div>
+						<div class="chart_type_bar" style="margin-top: 45px;">
+							<!-- div안에 차트 넣어 주세요. 이때 이미지는 삭제 해 주세요 -->
+							<!-- <img src="./images/@chart03.png" id="" alt=""> -->
+							<canvas id="myChart05" style="height: 355px; width: 100%; background-color: #777777;" width="553"></canvas>
+						</div>
+					</div>
+				</div>
+			</section>
+			
+        </section>
+        <!-- //content 끝 -->
+		
+    </div>
+    <!-- //container 끝 -->  
+	<!-- tool tip 시작 -->
+	<div id="tooltip—01" class="tooltip—content"> 
+		<table id="tooltip_table">
+			
+		</table>
+	</div>
+	<footer id="footer">Copyright (C) NAVSYS TECHNOLOGY INC. All Rights Reserved.</footer>  
+</div>
+<!-- //wrap 끝 -->
+	
+<div id="linechart_layer" class="pop-layer"> 
+	<div class="chart_type_line" >
+		<canvas id="myChart001" style="height: 100%; width: 100%; background-color: #777777;" width="1960"></canvas>
+	</div>
+	<div class="chart_type_line">
+		<canvas id="myChart002" style="height: 100%; width: 100%; background-color: #777777;" width="1960"></canvas>
+	</div>
+	<div class="chart_type_line">
+		<canvas id="myChart003" style="height: 100%; width: 100%; background-color: #777777;" width="1960"></canvas>
+	</div>
+</div>
+<!-- page script 시작 -->
+<script type="text/javascript">
+$(document).ready(function(){
+	// 스크롤바 디자인
+	if($('.scrollbar-dynamic').length){
+		$('.scrollbar-dynamic').scrollbar();
+	}
+});		
+</script>
+	
+<!-- GOOGLE MAP API (현재 API KEY : JUN) (DOM ELEMENT 뒤에 존재해야함!)--> 
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDhcjsFBekmXFBv5IB0rgsTjktsSMjzz88&callback=GoogleMap&v=weekly"
+      async
+    ></script>
+<!-- GOOGLE MAP API 끝 --> 
+<!-- 
+<script>
+	function getrandom(num , mul){
+		var value = [ ]	
+			for(i=0;i<=num;i++)
+		{
+			rand = Math.random() * mul;
+		value.push(rand);
+		}
+			return value;
+	}
+			
+	var trace1 = {
+	r: [0,2.4],
+	t: [220,350],
+	mode: 'markers+text',
+	name: 'Trial 1',
+	text: ['Text G','text'],
+	textposition: 'bottom',
+	// hovertemplate: '<i>Price</i>: $%{r:.2f}' +
+    //                     '<br><b>X</b>: %{t}<br>' 
+    //                    ,
+	marker: {
+		color: 'rgb(27,158,119)',
+		size: 200,
+		line: {color: 'white'},
+		opacity: 0.7
+	},
+	type: 'scatter'
+	};
+
+	// var trace2 = {
+	// r: getrandom(72, 3),
+	// t: getrandom(72, 105),
+	// mode: 'markers',
+	// name: 'Trial 2',
+	// hovertemplate: '<i>Price</i>: $%{r:.2f}' +
+    //                     '<br><b>X</b>: %{t}<br>' 
+    //                   ,
+	// marker: {
+	// 	color: 'rgb(217,95,2)',
+	// 	size: 110,
+	// 	line: {color: 'white'},
+	// 	opacity: 0.7
+	// },
+	// type: 'scatter'
+	// };
+
+	// var trace3 = {
+	// r: getrandom(62, 3),
+	// t: getrandom(62, -100),
+	// mode: 'markers',
+	// name: 'Trial 3',
+	// hovertemplate: '<i>Price</i>: $%{r:.2f}' +
+    //                     '<br><b>X</b>: %{t}<br>' ,
+	// marker: {
+	// 	color: 'rgb(117,112,179)',
+	// 	size: 110,
+	// 	line: {color: 'white'},
+	// 	opacity: 0.7
+	// },
+	// type: 'scatter'
+	// };
+
+	// var trace4 = {
+	// r: getrandom(62, 3),
+	// t: getrandom(62, -200),
+	// mode: 'markers',
+	// name: 'Trial 4',
+	// hovertemplate: '<i>Price</i>: $%{r:.2f}' +
+    //                     '<br><b>X</b>: %{t}<br>' ,
+	// marker: {
+	// 	color: 'rgb(231,41,138)',
+	// 	size: 110,
+	// 	line: {color: 'white'},
+	// 	opacity: 0.7
+	// },
+	// type: 'scatter'
+	// };
+
+	// var trace5 = {
+	
+	// r: getrandom(62, 3),
+	// t: getrandom(62, 250),
+	// hovertemplate: '<i>Price</i>: $%{r:.2f}' +
+    //                     '<br><b>X</b>: %{t}<br>',
+	// mode: 'markers',
+	// name: 'Trial 5',
+	// marker: {
+	// 	color: 'rgb(102,166,30)',
+	// 	size: 110,
+	// 	line: {color: 'white'},
+	// 	opacity: 0.7
+	// },
+	// type: 'scatter'
+	// };
+
+	// var data = [trace1, trace2, trace3, trace4, trace5];
+	var data = [trace1];
+
+	var layout = {
+	title: 'Hobbs-Pearson Trials',
+	width:400,
+	height:345,
+	showlegend: true,
+	font: {size: 15},
+	plot_bgcolor: 'rgb(223, 223, 223)',
+	angularaxis: {tickcolor: 'rgb(253,253,253)'}
+	};
+
+	Plotly.plot('myDiv', data, layout);
+</script>    -->
+
+</body>
+</html>

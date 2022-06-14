@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,  user-scalable=no">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<title>User Management - NAVSYS</title>
+<!-- 공통 링크 시작 -->
+<link rel="stylesheet" href="/static/css/reset.css">
+<link rel="stylesheet" href="/static/css/contents.css">
+<script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>	
+
+<script src="/static/js/common/common.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+<!-- //공통 링크 끝 -->
+<script src="/static/js/did/user_create.js"></script>
+</head>
+<body>
+<!-- wrap 시작 -->
+<div id="wrap">
+    <!-- header 시작 -->
+    <div id="header" class="menu06">
+		<h1>NAVSYS Technology INC</h1>
+		<img class="mmtr_img" src="/static/images/mmtr_netvu.png"></img>
+		<div id="marquee"><p id="data_status"></p></div>
+		<nav class="nav_wrap">
+			<ul class="nav_menu" id="nav_menu">
+				<li id="menu_project"><a href="/Project_list">Project Management</a></li>
+				<li id="menu_location"><a href="/Location_list">Location Management</a></li>
+				<li id="menu_station"><a href="/Station_list">Station Management</a></li>
+				<li  id="menu_monitoring"><a href="/Monitoring01">Monitoring</a></li>
+				<li id="menu_data"><a href="/Data01">Data Management</a></li>
+				<li id="menu_management"><a href="/User_list" class="active">User Management</a></li>
+			</ul>
+		</nav>
+		<button type="button" class="btn_point" style="margin-top: 80px; left: 20px; z-index: 100; position: absolute;" onclick="manual()" > manual down</button>
+		<button type="button" class="btn_logout" onclick="logout();">로그아웃</button>
+	</div>
+    <!-- header 끝 -->
+    
+    <!-- container 시작 -->
+    <div id="container">
+        <!-- content 시작 -->
+        <section id="content">
+			
+			<div class="page_tit">
+				<h2>USER MANAGEMENT</h2>
+				<div class="page_nav">USER MANAGEMENT</div>
+				
+			</div>
+			<p style="margin-bottom: -25px;">* 필수 항목입니다. </p>
+			<div class="create_wrap">	
+				<div class="input_row" id="user_id_row">
+					<label for="" id="">*ID</label>
+					<input type="text" name="" id="user_id" class="size_full" autocomplete="off">
+				</div>
+				<div class="input_row" id="uesr_pwd_row">
+					<label for="" id="">*PASSWORD</label>
+					<input type="password" name="" id="user_pwd" class="size_full">
+				</div>
+				<div class="input_row" id="user_re_pwd_row">
+					<label for="" id="">*PASSWORD CHECK</label>
+					<input type="password" name="" id="user_re_pwd" class="size_full">
+				</div>
+				<div class="input_row" id="user_nm_row">
+					<label for="" id="">NAME</label>
+					<input type="text" name="" id="user_nm" class="size_full" autocomplete="off">
+				</div>
+				<div class="input_row" id="user_email_row">
+					<label for="" id="">E-MAIL</label>
+					<input type="text" name="" id="user_email" class="size_full" autocomplete="off">
+				</div>
+				<div class="input_row" id="program_manager_row">
+					<label for="" id="LEVEL">*LEVEL</label>
+					<select name="" id="selectBox_grade">
+						<option value="all">level를 선택해 주세요.</option>
+						<option value="0102" id="program_manager">Program Manager</option>  
+						<option value="0103">Project Manager</option>
+						<option value="0104">User</option>  
+						<!-- <option value="0103">admin</option>   -->
+					
+					</select>
+				</div>
+				<div class="input_row" id="project_input_row">
+					<label for="" id="">*PROJECT</label>
+					<select name="" id="selectBox">
+						<option value="all">project를 선택해주세요</option>
+						
+					</select>
+				</div>	
+				
+				<div class="input_row" id="pwd_lock_row" style="display: none;">
+					<label for="" id="">잠김 여부</label>
+					<select name="" id="selectBox_lock">
+						<option value="0">사용중</option>
+						<option value="5" selected>미사용</option>
+					</select>
+				</div>
+
+				<div class="input_row" style="display:none" id="pwd_check_row">
+					<label for="" id="" style="width: 200px;">* 사용자 인증 PASSWORD 입력해 주세요.</label>
+					<input type="password" name="" id="pwd_check" class="size_full" >
+				</div>
+			</div>
+
+			<div class="btn_wrap">
+				<button type="button" class="btn_default" id="" onClick="location.href='User_list'">CANCEL</button>
+				<button type="button" class="btn_default" id="btn_delete">DELETE</button>
+				<button type="button" class="btn_default" id="btn_edit">EDIT</button>
+				<button type="submit" class="btn_point" id="btn_add">ADD</button>
+				<button type="submit" class="btn_point" id="btn_reedit" style="display: none;">EDIT</button>
+			</div>
+			
+        </section>
+        <!-- //content 끝 -->
+		
+    </div>
+    <!-- //container 끝 --> 
+	<footer id="footer">Copyright (C) NAVSYS TECHNOLOGY INC. All Rights Reserved.</footer>
+</div>
+<!-- //wrap 끝 -->
+	
+<!-- page script 시작 -->
+<script type="text/javascript">
+$(document).ready(function(){
+	
+});		
+</script>	
+</body>
+</html>
+

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,  user-scalable=no">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<title>Monitoring - NAVSYS</title>
+<!-- 공통 링크 시작 -->
+<link rel="stylesheet" href="/static/css/reset.css">
+<link rel="stylesheet" href="/static/css/contents.css">
+<script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.ztree.core.js"></script>	
+<script type="text/javascript" src="/static/js/jquery.scrollbar.js"></script>	
+<script type="text/javascript" src="/static/js/jquery.ztree.exedit.js"></script>	
+
+<script src="/static/js/common/common.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+<!-- //공통 링크 끝 -->
+<script src="/static/js/did/monitoring03.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- save  -->
+<script src="/static/js/html2canvas.js"></script>
+<script src="/static/js/jspdf.min.js"></script>
+
+</head>
+<body>
+	<div id="spinner_wrap">
+		<div id="Spinner" class="loadingio-spinner-spinner-2abenyjlvb2"><div class="ldio-9mmzph3q2iw">
+		<div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+		</div></div>
+		</div>
+<!-- wrap 시작 -->
+<div id="wrap">
+    <!-- header 시작 -->
+    <div id="header" class="menu04">
+		<h1>NAVSYS Technology INC</h1>
+		<img class="mmtr_img" src="/static/images/mmtr_netvu.png"></img>
+		<div id="marquee"><p id="data_status"></p></div>
+		<nav class="nav_wrap">
+			<ul class="nav_menu">
+				<li id="menu_project"><a href="/Project_list">Project Management</a></li>
+				<li><a href="/Location_list">Location Management</a></li>
+				<li><a href="/Station_list">Station Management</a></li>
+				<!-- <li class="treeY"><a href="/Monitoring01" class="active">Monitoring</a>
+					<div class="tree_wrap scrollbar-dynamic">
+						<ul id="treeDemo" class="ztree"></ul>
+					</div>
+				</li> -->
+				<li class="treeY"><a href="Monitoring01" class="active">Monitoring</a>
+					<div class="tree_wrap scrollbar-dynamic" style="max-height: 150px;">
+						<ul id="treeDemo" class="ztree"></ul>
+					</div>
+				</li>
+				<li><a href="/Data01">Data Management</a></li>
+				<li><a href="/User_list">User Management</a></li>
+			</ul>
+		</nav>
+		<button type="button" class="btn_point" style="margin-top: 80px; left: 20px; z-index: 100; position: absolute;" onclick="manual()" > manual down</button>
+		<button type="button" class="btn_logout" onclick="logout();">로그아웃</button>
+	</div>
+    <!-- header 끝 -->
+    
+    <!-- container 시작 -->
+    <div id="container">
+        <!-- content 시작 -->
+        <section id="content">
+			
+			<div class="page_tit">
+				<h2>MONITORING </h2>
+				<div class="page_nav">
+					<span>MONITORING</span>
+					<span id="project_nav"></span>
+					<span id="location_nav"></span>
+					<span id="station_nav"></span>
+				</div>
+			</div>
+			
+			<section class="monitoring_conts">
+				<h3>DATA SEARCH : <span id="project_name"></span></h3>			
+				<div class="create_wrap">	
+					<div class="input_row">
+						<span class="input_label">DATE</span>
+						<div class="input_box">
+							<input type="text" name="" id="termStart" class="input_data" autocomplete="off"> ~
+							<input type="text" name="" id="termEnd" class="input_data" autocomplete="off">
+						</div>
+					</div>
+					<div class="input_row">
+						<span class="input_label">PLOT TYPE</span>
+						<div class="input_box check" id="plotType">
+							<span><input type="radio" id="plotType01" name="plot_type"><label for="plotType01" class="lb_radio">Point</label></span>
+							<span><input type="radio" id="plotType02" name="plot_type" checked><label for="plotType02" class="lb_radio">Line</label></span>
+						</div>
+					</div>
+					<div class="input_row">
+						<label for="" id="">UPDATE RATE</label>
+						<div class="input_box">
+							<input type="text" name="" id="ratedate" autocomplete="off"> min
+						</div>
+						<!-- <select name="" id="updaterate" class="size_small">
+							<option value="type01">1</option>
+							<option value="type02">10</option>  
+							<option value="type03">30</option>  
+							<option value="type04">60</option>  
+						</select> min -->
+					</div>
+					<!-- <div class="input_row">
+						<span class="input_label">UPDATE RATE</span>
+						<div class="input_box">
+							<input type="text" name="" id="ratedate"> min
+						</div>
+					</div>	 -->
+					<div class="input_row mgt_none">
+						<span class="input_label">GNSS TYPE</span>
+						<div class="input_box check" id="gnsscheck">
+							<span><input type="checkbox" id="G" checked><label for="G" class="lb_check">GPS</label></span>
+							<span><input type="checkbox" id="N" checked><label for="N" class="lb_check">GLONASS</label></span>
+							<span><input type="checkbox" id="B" checked><label for="B" class="lb_check">BeiDou</label></span>
+							<span><input type="checkbox" id="E" checked><label for="E" class="lb_check">Galileo</label></span>
+						</div>
+					</div>
+					<div class="input_row">
+						<span class="input_label line_check">SATELLITES<br>SELECTION</span>
+						<div class="input_box line_check" id="satellite">
+							<p>
+								<span><input type="checkbox" id="PRN01" checked><label for="PRN01" class="lb_check">PRN01</label></span>
+								<span><input type="checkbox" id="PRN02" checked><label for="PRN02" class="lb_check">PRN02</label></span>
+								<span><input type="checkbox" id="PRN03" checked><label for="PRN03" class="lb_check">PRN03</label></span>
+								<span><input type="checkbox" id="PRN04" checked><label for="PRN04" class="lb_check">PRN04</label></span>
+								<span><input type="checkbox" id="PRN05" checked><label for="PRN05" class="lb_check">PRN05</label></span>
+								<span><input type="checkbox" id="PRN06" checked><label for="PRN06" class="lb_check">PRN06</label></span>
+								<span><input type="checkbox" id="PRN07" checked><label for="PRN07" class="lb_check">PRN07</label></span>
+								<span><input type="checkbox" id="PRN08" checked><label for="PRN08" class="lb_check">PRN08</label></span>
+							</p>
+							<p>
+								<span><input type="checkbox" id="PRN09" checked><label for="PRN09" class="lb_check">PRN09</label></span>
+								<span><input type="checkbox" id="PRN10" checked><label for="PRN10" class="lb_check">PRN10</label></span>
+								<span><input type="checkbox" id="PRN11" checked><label for="PRN11" class="lb_check">PRN11</label></span>
+								<span><input type="checkbox" id="PRN12" checked><label for="PRN12" class="lb_check">PRN12</label></span>
+								<span><input type="checkbox" id="PRN13" checked><label for="PRN13" class="lb_check">PRN13</label></span>
+								<span><input type="checkbox" id="PRN14" checked><label for="PRN14" class="lb_check">PRN14</label></span>
+								<span><input type="checkbox" id="PRN15" checked><label for="PRN15" class="lb_check">PRN15</label></span>
+								<span><input type="checkbox" id="PRN16" checked><label for="PRN16" class="lb_check">PRN16</label></span>
+							</p>
+							<p>
+								<span><input type="checkbox" id="PRN17" checked><label for="PRN17" class="lb_check">PRN17</label></span>
+								<span><input type="checkbox" id="PRN18" checked><label for="PRN18" class="lb_check">PRN18</label></span>
+								<span><input type="checkbox" id="PRN19" checked><label for="PRN19" class="lb_check">PRN19</label></span>
+								<span><input type="checkbox" id="PRN20" checked><label for="PRN20" class="lb_check">PRN20</label></span>
+								<span><input type="checkbox" id="PRN21" checked><label for="PRN21" class="lb_check">PRN21</label></span>
+								<span><input type="checkbox" id="PRN22" checked><label for="PRN22" class="lb_check">PRN22</label></span>
+								<span><input type="checkbox" id="PRN23" checked><label for="PRN23" class="lb_check">PRN23</label></span>
+								<span><input type="checkbox" id="PRN24" checked><label for="PRN24" class="lb_check">PRN24</label></span>
+							</p>
+							<p>
+								<span><input type="checkbox" id="PRN25" checked><label for="PRN25" class="lb_check">PRN25</label></span>
+								<span><input type="checkbox" id="PRN26" checked><label for="PRN26" class="lb_check">PRN26</label></span>
+								<span><input type="checkbox" id="PRN27" checked><label for="PRN27" class="lb_check">PRN27</label></span>
+								<span><input type="checkbox" id="PRN28" checked><label for="PRN28" class="lb_check">PRN28</label></span>
+								<span><input type="checkbox" id="PRN29" checked><label for="PRN29" class="lb_check">PRN29</label></span>
+								<span><input type="checkbox" id="PRN30" checked><label for="PRN30" class="lb_check">PRN30</label></span>
+								<span><input type="checkbox" id="PRN31" checked><label for="PRN31" class="lb_check">PRN31</label></span>
+								<span><input type="checkbox" id="PRN32" checked><label for="PRN32" class="lb_check">PRN32</label></span>
+							</p>
+							<p>
+								<span><input type="checkbox" id="PRN33" checked><label for="PRN33" class="lb_check">PRN33</label></span>
+								<span><input type="checkbox" id="PRN34" checked><label for="PRN34" class="lb_check">PRN34</label></span>
+								<span><input type="checkbox" id="PRN35" checked><label for="PRN35" class="lb_check">PRN35</label></span>
+								<span><input type="checkbox" id="PRN36" checked><label for="PRN36" class="lb_check">PRN36</label></span>
+								<span><input type="checkbox" id="PRN37" checked><label for="PRN37" class="lb_check">PRN37</label></span>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="btn_wrap">
+					<button type="button" class="btn_default" id="" onClick="location.href='Monitoring01'">CANCEL</button>
+					<button type="button" class="btn_point" id="btn_search" >SEARCH</button>
+				</div>				
+			</section>
+
+    
+			<div class="chart_wrap" id="linechart">
+				<div class="chart_type_line" style="height : 300px">
+					<!-- div안에 차트 넣어 주세요. 이때 이미지는 삭제 해 주세요 -->
+					<!-- <img src="./images/@chart04.png" id="" alt=""> -->
+					<canvas id="myChart01" style="height: 300px; width: 100%; background-color: #000033;" width="1498"></canvas>
+				</div>
+				<div class="chart_type_line" style="height : 300px">
+					<!-- div안에 차트 넣어 주세요. 이때 이미지는 삭제 해 주세요 -->
+					<!-- <img src="./images/@chart04.png" id="" alt=""> -->
+					<canvas id="myChart02" style="height: 300px; width: 100%; background-color: #000033;" width="1498"></canvas>
+				</div>
+				<div class="chart_type_line" style="height : 300px">
+					<!-- div안에 차트 넣어 주세요. 이때 이미지는 삭제 해 주세요 -->
+					<!-- <img src="./images/@chart04.png" id="" alt=""> -->
+					<canvas id="myChart03" style="height: 300px; width: 100%; background-color: #000033;" width="1498"></canvas>
+				</div>
+				<div class="chart_type_line" style="height : 300px">
+					<!-- div안에 차트 넣어 주세요. 이때 이미지는 삭제 해 주세요 -->
+					<!-- <img src="./images/@chart04.png" id="" alt=""> -->
+					<canvas id="myChart04" style="height: 300px; width: 100%; background-color: #000033;" width="1498"></canvas>
+				</div>
+			</div>
+			<div class="btn_wrap" id="savebtn" style="margin-top: 40px;">
+				<div class="input_box check" id="savetype" style=" display: inline-block; float: left; vertical-align: middle; height: 100%;padding-top: 0.5%; margin-left:10px;">
+					<span><input type="radio" id="saveType01" name="save_type" checked><label for="saveType01" class="lb_radio">PNG</label></span>
+					<span style="margin-left: 5px;"><input type="radio" id="saveType02" name="save_type" ><label for="saveType02" class="lb_radio">JPG</label></span>
+					<span style="margin-left: 5px;"><input type="radio" id="saveType03" name="save_type" ><label for="saveType03" class="lb_radio">PDF</label></span>
+				</div>
+				<button type="button" class="btn_point" id="savebtn01">SAVE</button>
+			</div>
+			
+        </section>
+        <!-- //content 끝 -->
+	</div>
+	<!-- tool tip 시작 -->
+	
+	<div id="tooltip—01" class="tooltip—content"> 
+		<table id="tooltip_table">
+			
+		</table>
+	</div>
+	
+	<footer id="footer">Copyright (C) NAVSYS TECHNOLOGY INC. All Rights Reserved.</footer>
+
+<!-- //container 끝 -->    
+</div>
+<!-- //wrap 끝 -->
+	
+<!-- page script 시작 -->
+<script type="text/javascript">
+
+		
+</script>
+
+</body>
+</html>

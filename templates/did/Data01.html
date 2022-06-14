@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,  user-scalable=no">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<title>Data Management - NAVSYS</title>
+<!-- 공통 링크 시작 -->
+<link rel="stylesheet" href="/static/css/reset.css">
+<link rel="stylesheet" href="/static/css/contents.css">
+<script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.ztree.core.js"></script>	
+<script type="text/javascript" src="/static/js/jquery.scrollbar.js"></script>	
+<script type="text/javascript" src="/static/js/jquery.ztree.exedit.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>	
+
+<script src="/static/js/common/common.js"></script>
+<!-- //공통 링크 끝 -->
+<script src="/static/js/did/data01.js"></script>
+<style>
+	a.level0.curSelectedNode .node_name { background : #2A9AF7; }
+	a.level1.curSelectedNode .node_name { background : #2A9AF7; }
+</style>
+</head>
+<body>
+	<div id="spinner_wrap">
+		<div id="Spinner" class="loadingio-spinner-spinner-2abenyjlvb2"><div class="ldio-9mmzph3q2iw">
+		<div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+		</div></div>
+		</div>
+<!-- wrap 시작 -->
+<div id="wrap">
+    <!-- header 시작 -->
+    <div id="header" class="menu05">
+		<h1>NAVSYS Technology INC</h1>
+		<img class="mmtr_img" src="/static/images/mmtr_netvu.png"></img>
+		<div id="marquee"><p id="data_status"></p></div>
+		<nav class="nav_wrap">
+			<ul class="nav_menu">
+				<li id="menu_project"><a href="/Project_list">Project Management</a></li>
+				<li id="menu_location"><a href="/Location_list">Location Management</a></li>
+				<li id="menu_station"><a href="/Station_list">Station Management</a></li>
+				<li id="menu_monitoring"><a href="/Monitoring01">Monitoring</a></li>
+				<li id="menu_data" class="treeY"><a href="/Data01" class="active">Data Management</a>
+					<div class="tree_wrap scrollbar-dynamic">
+						<ul id="treeDemo" class="ztree"></ul>
+					</div>
+				</li>
+				<li id="menu_management"><a href="/User_list">User Management</a></li>
+			</ul>
+		</nav>
+		<button type="button" class="btn_point" style="margin-top: 80px; left: 20px; z-index: 100; position: absolute;" onclick="manual()" > manual down</button>
+		<button type="button" class="btn_logout" onclick="logout();">로그아웃</button>
+	</div>
+    <!-- header 끝 -->
+    
+    <!-- container 시작 -->
+    <div id="container">
+        <!-- content 시작 -->
+        <section id="content">
+			
+			<div class="page_tit">
+				<h2>DATA MANAGEMENT</h2>
+				<div class="page_nav">
+					<span>DATA MANAGEMENT</span>
+					<span id="project_nav"></span>
+					<span id="location_nav"></span>
+					<span id="station_nav"></span>
+				</div>
+			</div>
+			
+			<section class="monitoring_conts">
+				<h3>DATA SAVE : <span id="project_name"></span></h3>			
+				<div class="create_wrap">	
+					<div class="input_row">
+						<span class="input_label">DATE</span>
+						<div class="input_box">
+							<input type="text" name="" id="termStart" class="input_data" autocomplete="off"> ~
+							<input type="text" name="" id="termEnd" class="input_data" autocomplete="off">
+						</div>
+					</div>
+					<!-- <div class="input_row">
+						<span class="input_label">DATA SELECT</span>
+						<div class="input_box check">
+							<span><input type="checkbox" id=""><label for="" class="lb_check">DDC01</label></span>
+							<span><input type="checkbox" id=""><label for="" class="lb_check">DDC02</label></span>
+						</div>
+					</div> -->
+					<div class="input_row">
+						<label for="" id="">UPDATE RATE</label>
+						<select name="" id="updaterate" class="size_small">
+							<option value="type01">1</option>
+							<option value="type02" selected>10</option>  
+							<option value="type03">30</option>  
+							<option value="type04">60</option>  
+						</select> min
+					</div>	
+					<div class="input_row">
+						<span class="input_label">DATA SELECT</span>
+						<div class="input_box check" id="dataselect">
+							<span><input type="checkbox" id="DDC01" checked><label for="DDC01" class="lb_check">DDC01</label></span>
+							<span><input type="checkbox" id="DDC02" checked><label for="DDC02" class="lb_check">DDC02</label></span>
+							<span><input type="checkbox" id="DDC03" checked><label for="DDC03" class="lb_check">DDC03</label></span>
+						</div>
+					</div>
+				</div>
+
+				<div class="btn_wrap">
+					<button type="button" class="btn_default" id="DOWNLOAD" >DOWNLOAD</button>
+					<button type="button" class="btn_default" id="" onclick="location.href='/Monitoring01'">CANCEL</button>
+					<button type="button" class="btn_point" id="btnExportPopup">SEARCH</button>
+				</div>				
+			</section>
+
+			<div class="file_wrap">
+				<!-- 여기에 테이터 저장파일이 보이나봐요 -->
+			</div>
+			
+			
+        </section>
+        <!-- //content 끝 -->
+		
+    </div>
+    <!-- //container 끝 --> 
+
+	<!-- tool tip 시작 -->
+	<div id="tooltip—01" class="tooltip—content"> 
+		<table id="tooltip_table">
+			
+		</table>
+	</div>
+	
+
+
+	<footer id="footer">Copyright (C) NAVSYS TECHNOLOGY INC. All Rights Reserved.</footer>
+</div>
+<!-- //wrap 끝 -->
+	
+<!-- page script 시작 -->
+<script type="text/javascript">		
+$(document).ready(function(){	
+	// datapicker
+	// $( "#termStart, #termEnd" ).datepicker({
+	// 	dateFormat: 'yy.mm.dd',
+	// 	prevText: '이전 달',
+	// 	nextText: '다음 달',
+	// 	monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+	// 	monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+	// 	dayNames: ['일','월','화','수','목','금','토'],
+	// 	dayNamesShort: ['일','월','화','수','목','금','토'],
+	// 	dayNamesMin: ['일','월','화','수','목','금','토'],
+	// 	showMonthAfterYear: true,
+	// 	yearSuffix: '년'
+	// });
+	// 스크롤바 디자인
+	if($('.scrollbar-dynamic').length){
+		$('.scrollbar-dynamic').scrollbar();
+	}
+});		
+</script>
+
+<script type="text/javascript">
+
+	// var setting = {
+	// 	data: {
+	// 		simpleData: {
+	// 			enable: true
+	// 		}
+	// 	}
+	// };
+
+	// var zNodes =[
+	// 		{ id:1, pId:0, name:"테스트베드", open:false},
+	// 		{ id:11, pId:1, name:"암사대교"},
+	// 		{ id:111, pId:11, name:"암사대교01"},
+	// 		{ id:112, pId:11, name:"암사대교02"},
+	// 		{ id:12, pId:1, name:"올림픽대교"},
+	// 		{ id:121, pId:12, name:"올림픽대교01"},
+	// 		{ id:122, pId:12, name:"올림픽대교02"},
+	// 		{ id:2, pId:0, name:"청담대교", open:true},
+	// 		{ id:21, pId:2, name:"청담대교1"},
+	// 		{ id:211, pId:21, name:"청담대교101"},
+	// 		{ id:212, pId:21, name:"청담대교102"},
+	// 		{ id:22, pId:2, name:"청담대교2"},
+	// 		{ id:221, pId:22, name:"청담대교201"},
+	// 		{ id:222, pId:22, name:"청담대교202"},
+	// 		{ id:3, pId:0, name:"영종대교", isParent:false},
+	// 		{ id:4, pId:0, name:"일산대교", isParent:false}
+	// 	];
+
+	// $(document).ready(function(){
+	// 	$.fn.zTree.init($("#treeDemo"), setting, zNodes);
+	// });
+</script>
+	
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
